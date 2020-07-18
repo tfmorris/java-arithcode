@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.openrefine.dependencies</groupId>
+  <artifactId>arithcode</artifactId>
+  <version>1.1</version>
+  <name>Arithcode</name>
+  <url>https://github.com/bob-carpenter/java-arithcode</url>
+  <description>A Java implementation of arithmetic coding and PPM compression.</description>
+  <licenses>
+            <license>
+                    <name>3-Clause BSD License</name>
+                    <url>https://opensource.org/licenses/BSD-3-Clause</url>
+                    <distribution>repo</distribution>
+            </license>
+  </licenses>
+<developers>
+		<developer>
+			<id>bob-carpenter</id>
+			<name>Bob Carpenter</name>
+			<email>carp@alias-i.com</email>
+		</developer>
+	</developers>
+    <scm>
+        <connection>scm:git:https://github.com/bob-carpenter/java-arithcode.git</connection>
+        <developerConnection>scm:git:https://github.com/bob-carpenter/java-arithcode.git</developerConnection>
+        <url>https://github.com/bob-carpenter/java-arithcode</url>
+    </scm>
+</project>
