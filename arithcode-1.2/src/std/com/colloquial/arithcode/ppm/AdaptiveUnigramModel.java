@@ -1,4 +1,4 @@
-package com.colloquial.arithcode.ppm;
+package com.colloquial.arithcode;
 
 /** <P>Provides an adaptive model based on bytes observed in the input
  * stream.  Each byte count is initialized at <code>1</code> and
@@ -18,41 +18,36 @@ public final class AdaptiveUnigramModel implements ArithCodeModel {
      * and end-of-file to <code>1</code>.
      */
     public AdaptiveUnigramModel() {                           // initial cumulative counts
-        for (int i = 0; i < NUM_BYTES; ++i)  _count[i] = i;   // low[i]   = high[i+1]
-        _count[EOF_INDEX] = EOF_INDEX;                        // low[EOF] = high[255]
-        _count[TOTAL_INDEX] = TOTAL_INDEX;                    // total    = high[EOF]
+	for (int i = 0; i < NUM_BYTES; ++i)  _count[i] = i;   // low[i]   = high[i+1]
+	_count[EOF_INDEX] = EOF_INDEX;                        // low[EOF] = high[255]
+	_count[TOTAL_INDEX] = TOTAL_INDEX;                    // total    = high[EOF]
     }
 
     // specified in ArithCodeModel
     public void interval(int symbol, int[] result) {
-        if (symbol == EOF) symbol = EOF_INDEX;
-        result[0] = lowCount(symbol);
-        result[1] = highCount(symbol);
-        result[2] = totalCount();
-        increment(symbol);
+	if (symbol == EOF) symbol = EOF_INDEX;
+	result[0] = lowCount(symbol);
+	result[1] = highCount(symbol);
+	result[2] = totalCount();
+	increment(symbol);
     }
 
     // specified in ArithCodeModel
     public int pointToSymbol(int midCount) {
-        int low = 0;
-        int high = TOTAL_INDEX;
-        while (true) { // binary search returns when it finds result
-            int mid = (high+low)/2;
-            if (_count[mid] > midCount) { 
-                if (high == mid) --high;
-                else high = mid; 
-            } else if (_count[mid+1] > midCount) {
-                return (mid==EOF_INDEX) ? EOF : mid;
-            } else { 
-                if (low==mid) ++low;
-                else low = mid;
-            }
-        }
-    }
-
-    @Override
-    public String toString() {
-        return "AdaptiveUnigramModel";
+	int low = 0;
+	int high = TOTAL_INDEX;
+	while (true) { // binary search returns when it finds result
+     	    int mid = (high+low)/2;
+	    if (_count[mid] > midCount) { 
+		if (high == mid) --high;
+		else high = mid; 
+	    } else if (_count[mid+1] > midCount) {
+		return (mid==EOF_INDEX) ? EOF : mid;
+	    } else { 
+		if (low==mid) ++low;
+		else low = mid;
+	    }
+	}
     }
 
     // specified in ArithCodeModel
@@ -66,8 +61,8 @@ public final class AdaptiveUnigramModel implements ArithCodeModel {
 
     // specified by ArithCodeModel
     public void increment(int i) {
-        while (++i <= TOTAL_INDEX) ++_count[i];
-        if (totalCount() >= MAX_COUNT) rescale();
+	while (++i <= TOTAL_INDEX) ++_count[i];
+	if (totalCount() >= MAX_COUNT) rescale();
     }
      
     /** Counts for each outcome. Indices 0 to 255 for the
@@ -94,11 +89,11 @@ public final class AdaptiveUnigramModel implements ArithCodeModel {
      * <code>2</code>.
      */
     private void rescale() {
-        int[] freqs = new int[_count.length];
-        for (int i = 1; i < freqs.length; ++i)
-            freqs[i] = (_count[i] - _count[i-1] + 1) / 2;  // compute from cumulative; round up
-        for (int i = 1; i < _count.length; ++i)            // compute cumulative;
-            _count[i] = _count[i-1] + freqs[i];            // _count[0] = 0 is implicit
+	int[] freqs = new int[_count.length];
+	for (int i = 1; i < freqs.length; ++i)
+	    freqs[i] = (_count[i] - _count[i-1] + 1) / 2;  // compute from cumulative; round up
+	for (int i = 1; i < _count.length; ++i)            // compute cumulative;
+	    _count[i] = _count[i-1] + freqs[i];            // _count[0] = 0 is implicit
     }
 
     /** Maximum count before rescaling.

@@ -1,4 +1,4 @@
-package com.colloquial.arithcode.ppm;
+package com.colloquial.arithcode;
 
 /** <P>A singleton uniform distribution byte model.  Provides a single
  * static member that is a non-adaptive model assigning equal
@@ -14,19 +14,19 @@ public final class UniformModel implements ArithCodeModel {
 
     // specified by ArithCodeModel
     public int totalCount() {
-        return NUM_OUTCOMES;
+	return NUM_OUTCOMES;
     }
      
     // specified by ArithCodeModel
     public int pointToSymbol(int midCount) {
-        return (midCount == EOF_INDEX ? EOF : midCount);
+	return (midCount == EOF_INDEX ? EOF : midCount);
     }
 
     // specified by ArithCodeModel
     public void interval(int symbol, int[] result) {
-        result[0] = symbol == EOF ? EOF_INDEX : symbol;
-        result[1] = result[0] + 1;
-        result[2] = NUM_OUTCOMES;
+	result[0] = symbol == EOF ? EOF_INDEX : symbol;
+	result[1] = result[0] + 1;
+	result[2] = NUM_OUTCOMES;
     }
 
     // specified by ArithCodeModel
@@ -37,11 +37,6 @@ public final class UniformModel implements ArithCodeModel {
 
     // specified by ArithCodeModel
     public void increment(int symbol) { }
-
-    @Override
-    public String toString() {
-        return "UniformModel";
-    }
 
     /** A re-usable uniform model. 
      */

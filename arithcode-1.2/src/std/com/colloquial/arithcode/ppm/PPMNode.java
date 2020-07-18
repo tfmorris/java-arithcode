@@ -1,4 +1,4 @@
-package com.colloquial.arithcode.ppm;
+package com.colloquial.arithcode;
 
 /** <P>A node in a depth-bounded suffix tree that represents counts of
  * sequences of bytes.  Nodes in the trie are accessed through
@@ -33,15 +33,15 @@ final class PPMNode {
      * @param nextSibling The next daughter node in the list of daughters.
      */
     PPMNode(byte b, PPMNode nextSibling) {
-        _byte = b;
-        _nextSibling = nextSibling;
+	_byte = b;
+	_nextSibling = nextSibling;
     }
 
     /** Construct a node with the specified byte.
      * @param b Byte represented by node.
      */
     PPMNode(byte b) { 
-        this(b,null);
+	this(b,null);
     }
 
     /** Returns <code>true</code> if the number of children for
@@ -50,13 +50,13 @@ final class PPMNode {
      * @return <code>true</code> if the scaled number of outcomes for this node is <code>1</code>.
      */
     boolean isDeterministic(ByteSet excludedBytes) {
-        return _firstChild._nextSibling == null; // already checked _firstChild != null by calling isChildless first
-        /* doing it right is about 10-12% slower and less than .01 b/B better
-        int numOutcomes = 0;
-        for (PPMNode node = _firstChild; node != null; node = node._nextSibling) 
-            if (!excludedBytes.contains(node._byte) && ++numOutcomes > 1) return false;
-        return numOutcomes == 1;
-        */
+	return _firstChild._nextSibling == null; // already checked _firstChild != null by calling isChildless first
+	/* doing it right is about 10-12% slower and less than .01 b/B better
+	int numOutcomes = 0;
+	for (PPMNode node = _firstChild; node != null; node = node._nextSibling) 
+	    if (!excludedBytes.contains(node._byte) && ++numOutcomes > 1) return false;
+	return numOutcomes == 1;
+	*/
     }
 
     /** Returns <code>true</code> if this node has no children, not counting 
@@ -65,11 +65,11 @@ final class PPMNode {
      * @return  <code>true</code> if this node has no children, not counting 
      */
     boolean isChildless(ByteSet excludedBytes) {
-        // return _firstChild == null; // not much faster and compresses less due to added escapes
-        for (PPMNode node = _firstChild; node != null; node = node._nextSibling) {
-            if (!excludedBytes.contains(node._byte)) return false;
-        }
-        return true;
+	// return _firstChild == null; // not much faster and compresses less due to added escapes
+	for (PPMNode node = _firstChild; node != null; node = node._nextSibling) {
+	    if (!excludedBytes.contains(node._byte)) return false;
+	}
+	return true;
     }
 
     /** Total count for this node, not including those bytes in the specified set.
@@ -77,11 +77,11 @@ final class PPMNode {
      * @return Total count for this node.
      */
     int totalCount(ByteSet excludedBytes) {
-        int count = _numberOfOutcomes;
-        for (PPMNode child = _firstChild; child != null; child = child._nextSibling) 
-            if (!excludedBytes.contains(child._byte)) 
-                count += child._count;
-        return count;
+	int count = _numberOfOutcomes;
+	for (PPMNode child = _firstChild; child != null; child = child._nextSibling) 
+	    if (!excludedBytes.contains(child._byte)) 
+		count += child._count;
+	return count;
     }
     
     
@@ -92,7 +92,7 @@ final class PPMNode {
      * @param result Array in which to write the range for the specified byte.
      */ 
     void interval(int i, ByteSet excludedBytes, int[] result) {
-        interval(Converter.integerToByte(i),excludedBytes,result);
+	interval(Converter.integerToByte(i),excludedBytes,result);
     }
 
     /** Calculates the interval for the specified byte from this node and writes
@@ -102,19 +102,19 @@ final class PPMNode {
      * @param result Array in which to write the range for the specified byte.
      */ 
     private void interval(byte b, ByteSet excludedBytes, int[] result) {
-        result[0] = 0; 
-        for (PPMNode dtrNode = _firstChild; dtrNode != null; dtrNode = dtrNode._nextSibling) {
-            if (excludedBytes.contains(dtrNode._byte)) continue;
-            if (dtrNode._byte == b) {
-                result[1] = result[0] + dtrNode._count;
-                result[2] = result[1] + _numberOfOutcomes;
-                for (dtrNode = dtrNode._nextSibling; dtrNode != null; dtrNode = dtrNode._nextSibling)
-                    if (!excludedBytes.contains(dtrNode._byte)) 
-                        result[2] += dtrNode._count;
-                return; 
-            } 
-            result[0] += dtrNode._count;
-        }
+	result[0] = 0; 
+	for (PPMNode dtrNode = _firstChild; dtrNode != null; dtrNode = dtrNode._nextSibling) {
+	    if (excludedBytes.contains(dtrNode._byte)) continue;
+	    if (dtrNode._byte == b) {
+		result[1] = result[0] + dtrNode._count;
+		result[2] = result[1] + _numberOfOutcomes;
+		for (dtrNode = dtrNode._nextSibling; dtrNode != null; dtrNode = dtrNode._nextSibling)
+		    if (!excludedBytes.contains(dtrNode._byte)) 
+			result[2] += dtrNode._count;
+		return; 
+	    } 
+	    result[0] += dtrNode._count;
+	}
     }
 
     /** The interval for the escape count, less the set of excluded bytes. 
@@ -122,8 +122,8 @@ final class PPMNode {
      * @param result Array into which to write the range for the specified bytes.
      */
     void intervalEscape(ByteSet excludedBytes, int[] result) {
-        result[2] = (result[1] = totalCount(excludedBytes));
-        result[0] = result[1]-_numberOfOutcomes;
+	result[2] = (result[1] = totalCount(excludedBytes));
+	result[0] = result[1]-_numberOfOutcomes;
     }
 
     /** Increment the counts for this node for the string specified in
@@ -131,7 +131,7 @@ final class PPMNode {
      * @param buffer Buffer of bytes from which to read event to increment.
      */
     void increment(ByteBuffer buffer) {
-        if (buffer.length() > 0) increment(buffer.bytes(),buffer.offset(),buffer.length());
+	if (buffer.length() > 0) increment(buffer.bytes(),buffer.offset(),buffer.length());
     }
 
 
@@ -141,7 +141,7 @@ final class PPMNode {
      * @return </code>true</code> if there is a child node with the specified byte.
      */
     boolean hasDaughter(int i) {
-        return hasDaughter(Converter.integerToByte(i));
+	return hasDaughter(Converter.integerToByte(i));
     }
 
     /** Returns <code>true</code> if this node has a child with the specified byte.
@@ -149,9 +149,9 @@ final class PPMNode {
      * @return </code>true</code> if there is a child node with the specified byte.
      */
     private boolean hasDaughter(byte b) {
-        for (PPMNode dtrNode = _firstChild; dtrNode != null; dtrNode = dtrNode._nextSibling) 
-            if (dtrNode._byte == b) return true;
-        return false;
+	for (PPMNode dtrNode = _firstChild; dtrNode != null; dtrNode = dtrNode._nextSibling) 
+	    if (dtrNode._byte == b) return true;
+	return false;
     }
 
     /** Retrieves the symbol for which the midCount is between its low and high
@@ -161,13 +161,13 @@ final class PPMNode {
      * @return Symbol with specified count.
      */
     int pointToSymbol(int midCount, ByteSet excludedBytes) {
-        int highCount = 0;
-        for (PPMNode child = _firstChild; child != null; child = child._nextSibling) {
-            if (excludedBytes.contains(child._byte)) continue;
-            highCount += child._count;
-            if (highCount > midCount) return Converter.byteToInteger(child._byte);
-        }
-        return ArithCodeModel.ESCAPE;
+	int highCount = 0;
+	for (PPMNode child = _firstChild; child != null; child = child._nextSibling) {
+	    if (excludedBytes.contains(child._byte)) continue;
+	    highCount += child._count;
+	    if (highCount > midCount) return Converter.byteToInteger(child._byte);
+	}
+	return ArithCodeModel.ESCAPE;
     }
 
     /** Extends this node with the given sequence of bytes, specified
@@ -177,13 +177,13 @@ final class PPMNode {
      * @param length Number of bytes to extend.
      */
     void complete(byte[] bytes, int offset, int length) {
-        PPMNode node = this;
-        while (length > 0) {
-            ++node._numberOfOutcomes;
-            node = node._firstChild = new PPMNode(bytes[offset]);
-            ++offset;
-            --length;
-        }
+	PPMNode node = this;
+	while (length > 0) {
+	    ++node._numberOfOutcomes;
+	    node = node._firstChild = new PPMNode(bytes[offset]);
+	    ++offset;
+	    --length;
+	}
     }
 
     /** Increment the count of all of the nodes along the sequence of
@@ -194,32 +194,32 @@ final class PPMNode {
      * @param length Total number of bytes to read from array.
      */
     void increment(byte[] bytes, int offset, int length) {
-        if (_firstChild == null) {
-            ++_numberOfOutcomes;
-            _firstChild = new PPMNode(bytes[offset]);
-            if (length > 1) _firstChild.complete(bytes,offset+1,length-1); 
-            return;
-        }
-        PPMNode previousChild = null;             // move to front                    
-        for (PPMNode child = _firstChild; true; child = child._nextSibling) {
-            if (child._byte == bytes[offset]) {
-                if (length > 1) child.increment(bytes,offset+1,length-1);
-                if (previousChild != null) {   // move to front 
-                    previousChild._nextSibling = child._nextSibling; 
-                    child._nextSibling = _firstChild;                
-                    _firstChild = child;                             
-                }
-                if (++child._count > MAX_INDIVIDUAL_COUNT) rescale(); 
-                return; 
-            } 
-            if (child._nextSibling == null) {
-                ++_numberOfOutcomes;
-                _firstChild = new PPMNode(bytes[offset],_firstChild); // start in front
-                if (length > 1) _firstChild.complete(bytes,offset+1,length-1); // start in front     
-                return;
-            } 
-            previousChild = child;                                // move to front  
-        }
+	if (_firstChild == null) {
+	    ++_numberOfOutcomes;
+	    _firstChild = new PPMNode(bytes[offset]);
+	    if (length > 1) _firstChild.complete(bytes,offset+1,length-1); 
+	    return;
+	}
+	PPMNode previousChild = null;             // move to front                    
+	for (PPMNode child = _firstChild; true; child = child._nextSibling) {
+	    if (child._byte == bytes[offset]) {
+		if (length > 1) child.increment(bytes,offset+1,length-1);
+		if (previousChild != null) {   // move to front 
+		    previousChild._nextSibling = child._nextSibling; 
+		    child._nextSibling = _firstChild;                
+		    _firstChild = child;                             
+		}
+		if (++child._count > MAX_INDIVIDUAL_COUNT) rescale(); 
+		return; 
+	    } 
+	    if (child._nextSibling == null) {
+		++_numberOfOutcomes;
+		_firstChild = new PPMNode(bytes[offset],_firstChild); // start in front
+		if (length > 1) _firstChild.complete(bytes,offset+1,length-1); // start in front     
+		return;
+	    } 
+	    previousChild = child;                                // move to front  
+	}
     }
 
     /** The byte for this node.
@@ -249,9 +249,9 @@ final class PPMNode {
      */
     /*
     private PPMNode prune() {
-        if (_count < MIN_PRUNE_COUNT) return (PPMNode) null;
-        if (_firstChild != null) _firstChild = _firstChild.pruneSiblings();
-        return this;
+	if (_count < MIN_PRUNE_COUNT) return (PPMNode) null;
+	if (_firstChild != null) _firstChild = _firstChild.pruneSiblings();
+	return this;
     }
     */
 
@@ -261,14 +261,14 @@ final class PPMNode {
      */
     /*
     private PPMNode pruneSiblings() {
-        if (_count < MIN_PRUNE_COUNT) {
-            if (_nextSibling == null) return null;
-            return _nextSibling.pruneSiblings();
-        }
-        if (_firstChild != null) _firstChild = _firstChild.pruneSiblings();
-        if (_nextSibling == null) return this;
-        _nextSibling = _nextSibling.pruneSiblings();
-        return this;
+	if (_count < MIN_PRUNE_COUNT) {
+	    if (_nextSibling == null) return null;
+	    return _nextSibling.pruneSiblings();
+	}
+	if (_firstChild != null) _firstChild = _firstChild.pruneSiblings();
+	if (_nextSibling == null) return this;
+	_nextSibling = _nextSibling.pruneSiblings();
+	return this;
     }
     */
 
@@ -279,8 +279,8 @@ final class PPMNode {
      * possiblity for escapes.
      */
     private void rescale() {
-        _numberOfOutcomes = (short)((_numberOfOutcomes + 1)/2);
-        _firstChild = _firstChild.rescaleSiblings();
+	_numberOfOutcomes = (short)((_numberOfOutcomes + 1)/2);
+	_firstChild = _firstChild.rescaleSiblings();
     }
 
     /** Rescale the counts on this node and the siblings of this node.  Divides by 2, rounding
@@ -288,11 +288,11 @@ final class PPMNode {
      * be original sibling or may be <code>null</code> if siblings scale below
      */
     private PPMNode rescaleSiblings() {
-        _count >>= 1;  // cheap divide by 2
-        if (_nextSibling == null) return (_count < MIN_COUNT) ? null : this;
-        if (_count < MIN_COUNT)  return _nextSibling.rescaleSiblings(); 
-        _nextSibling = _nextSibling.rescaleSiblings();
-        return this;
+	_count >>= 1;  // cheap divide by 2
+	if (_nextSibling == null) return (_count < MIN_COUNT) ? null : this;
+	if (_count < MIN_COUNT)  return _nextSibling.rescaleSiblings(); 
+	_nextSibling = _nextSibling.rescaleSiblings();
+	return this;
     }
 
     /** Minimum count for a node to survive pruning.

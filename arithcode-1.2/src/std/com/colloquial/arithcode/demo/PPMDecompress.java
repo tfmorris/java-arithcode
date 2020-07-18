@@ -1,72 +1,54 @@
-package com.colloquial.arithcode.demo;
+package com.colloquial.arithcode;
 
-import com.colloquial.arithcode.ppm.PPMModel;
-import com.colloquial.arithcode.ppm.ArithCodeInputStream;
-
-import static com.colloquial.io.Util.copy;
-
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-
-/** 
- * Command-line function for compression.
- *
+/** Command-line function for decompressing files or streams.
  * <P>
  * <b>Usage:</b>
- *
- * <blockquote><pre>java PPMCompress <i>Order FileIn FileOut</i></pre></blockquote>
- * 
- * <ul>
- * <li> <code><i>Order</i></code>: Order of PPM model to use.
- * <li><code><i>FileIn</i></code>: Input file to decompress. 
- * <li><code><i>FileOut</i></code>: Output for decompressed file.
- * </ul>
- *
- * <p>This is just meant as a demo.  A more sophisticated version
- * would name arguments and allow input or output files to be ommitted
- * and use standard input and output.  And would write the order as
- * the first byte of the output so that it didn't need to be specified.
+ * <BR><code>java PPMDecompress [<i>Order</i> [<i>FileIn</i> [<i>FileOut</i>]]]</code>
+ * <BR>&nbsp;&nbsp; <code><i>Order</i></code>   : Order of PPM model to use.
+ * <BR>&nbsp;&nbsp; <code><i>FileIn</i></code>  : File to decompress.  If not specified, uses stdin
+ * <BR>&nbsp;&nbsp; <code><i>FileOut</i></code> : Name of file into which to write the decompressed output.  
+ * Directory must exist.  If not specified, writes to <code>stdout</code>.
+ * <P>
+ * For example, <code>java PPMDeCompress 5 foo.ppm foo</code> uses order 5 compression
+ * to decompress file <code>foo.ppm</code> to file <code>foo</code>.  Similarly, <code>proc1 | PPMDecompress 8 | proc2</code>
+ * takes input from the standard out of <code>proc1</code> and sends the decompressed
+ * stream to <code>proc2</code>.  
  * 
  * @author <a href="http://www.colloquial.com/carp/">Bob Carpenter</a>
- * @version 1.2
+ * @version 1.1
+ * @see PPMCompress
  * @since 1.1
  */
 public final class PPMDecompress {
 
-    /** 
-     * Decompress the specified file using the specified order
-     * of PPM.  See the class documentation for more information.
-     *
-     * @param args Command-line argument.
+    /** Decompress according to the command line specification.  See class documentation for
+     * description.
      * @throws IOException If there is an underlying IO exception.
      */
     public static void main(String[] args) throws IOException {
-        if (args.length != 3) {
-            System.err.println(USAGE_MESSAGE);
-            System.exit(1);
-        }
-        int order = Integer.valueOf(args[0]);
-        File inFile = new File(args[1]);
-        File outFile = new File(args[2]);
-        
-        PPMModel model = new PPMModel(order);
-        InputStream fileIs = new FileInputStream(inFile);
-        InputStream bufIs = new BufferedInputStream(fileIs);
-        InputStream arithIs = new ArithCodeInputStream(bufIs,model);
-        OutputStream fileOs = new FileOutputStream(outFile);
-        OutputStream bufOs = new BufferedOutputStream(fileOs);
-        copy(arithIs,bufOs);
-        bufOs.close();
+	if (args.length > 3) {
+	    System.err.println(USAGE_MESSAGE);
+	    System.exit(1);
+	}
+	FileInputStream in = new FileInputStream(args[1]);
+	Test.copyStream(new ArithCodeInputStream(args.length < 2 ? System.in : new java.io.FileInputStream(args[1]),
+						 new PPMModel(args.length < 1 ? 8 : Integer.parseInt(args[0]))),
+			args.length < 3 ? (OutputStream) System.out : new FileOutputStream(args[2])); // cast due to ternary whackiness
     }
 
-    private static String USAGE_MESSAGE
-        = "\nUSAGE: java PPMDecompress Order FileIn FileOut";
+    private static String USAGE_MESSAGE = "\n" +
+	"  USAGE:\n" +
+	"  java PPMDecompress [Order [FileIn [FileOut]]]\n" +
+	"     Order: Order of PPM model to use.\n" +
+	"     FileIn: File to decompress.  If not specified, uses stdin\n" +
+	"     FileOut: Name of file into which to write the decompressed output.\n" +
+	"              Directory must exist.  If not specified, writes to stdout.\n" +
+	"\n";
 
 }

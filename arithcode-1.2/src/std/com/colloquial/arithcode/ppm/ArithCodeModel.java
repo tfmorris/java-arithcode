@@ -1,4 +1,4 @@
-package com.colloquial.arithcode.ppm;
+package com.colloquial.arithcode;
 
 /** <P>Interface for an adaptive statistical model of a stream to be used
  * as a basis for arithmetic coding and decoding. As in {@link
@@ -51,7 +51,7 @@ public interface ArithCodeModel {
     /** Returns the symbol whose interval of low and high counts
      * contains the given count.  Ordinary outcomes are positive
      * integers, and the two special constants <code>EOF</code> or
-     * <code>ESCAPE</code>, are negative.
+     * <code>ESCAPE</code>, which are negative.
      * @param count The given count.
      * @return The symbol whose interval contains the given count.
      */
@@ -71,6 +71,7 @@ public interface ArithCodeModel {
      * <emph>after</emph> returning its current interval.
      * @param symbol The next symbol to decode.
      * @param result Array into which to write range.
+     * @return Array containing low count, high count and total.
      */
     public void interval(int symbol, int[] result);
 

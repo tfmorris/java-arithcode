@@ -1,8 +1,4 @@
-package com.colloquial.arithcode.ppm;
-
-import com.colloquial.arithcode.ArithDecoder;
-
-import com.colloquial.io.BitInput;
+package com.colloquial.arithcode;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -32,20 +28,19 @@ public final class ArithCodeInputStream extends InputStream {
      * @throws IOException If there is an I/O exception in the underlying input stream.
      */
     public ArithCodeInputStream(ArithDecoder decoder, ArithCodeModel model) throws IOException {
-        _decoder = decoder;
-        _model = model;
-        decodeNextByte();
+	_decoder = decoder;
+	_model = model;
+	decodeNextByte();
     }
 
     /** Construct an arithmetic coded input stream from a specified
      * bit input and a statistical model.
-     *
-     * @param in Bit input from which to read bits.
+     * @param bitIn Bit input from which to read bits.
      * @param model Statistical model for arithmetic coding.
      * @throws IOException If there is an I/O exception in the underlying input stream.
      */
     public ArithCodeInputStream(BitInput in, ArithCodeModel model) throws IOException {
-        this(new ArithDecoder(in), model);
+	this(new ArithDecoder(in), model);
     }
 
     /** Construct an arithmetic coded input stream from a specified
@@ -55,7 +50,7 @@ public final class ArithCodeInputStream extends InputStream {
      * @throws IOException If there is an I/O exception in the underlying input stream.
      */
     public ArithCodeInputStream(BufferedInputStream in, ArithCodeModel model) throws IOException {
-        this(new BitInput(in),model);
+	this(new BitInput(in),model);
     }
 
     /** Construct an arithmetic coded input stream from a specified
@@ -65,7 +60,7 @@ public final class ArithCodeInputStream extends InputStream {
      * @throws IOException If there is an I/O exception in the underlying input stream.
      */
     public ArithCodeInputStream(InputStream in, ArithCodeModel model) throws IOException {
-        this(new BufferedInputStream(in), model);
+	this(new BufferedInputStream(in), model);
     }
     
     /** Returns <code>1</code> if there is at least one byte
@@ -73,14 +68,14 @@ public final class ArithCodeInputStream extends InputStream {
      * @return <code>1</code> if at least one byte is available and <code>0</code> otherwise.
      */
     public int available() {
-        return (_nextByte >= 0) ? 1 : 0;
+	return (_nextByte >= 0) ? 1 : 0;
     }
 
     /** Closes this input stream.
      * @throws IOException If there is an exception closing the underlying input stream.
      */
     public void close() throws IOException {
-        _decoder.close();
+	_decoder.close();
     }
 
     /** Not supported.
@@ -92,7 +87,7 @@ public final class ArithCodeInputStream extends InputStream {
      * @return <code>false</code>.
      */
     public boolean markSupported() {
-        return false;
+	return false;
     }
 
     /** Read an array of bytes into the specified byte array, returning
@@ -102,7 +97,7 @@ public final class ArithCodeInputStream extends InputStream {
      * @throws IOException If there is an I/O exception reading from the underlying stream.
      */
     public int read(byte[] bs) throws IOException {
-        return read(bs,0,bs.length);
+	return read(bs,0,bs.length);
     }
 
     /** Read the specified number of bytes into the array, beginning from the position
@@ -115,15 +110,12 @@ public final class ArithCodeInputStream extends InputStream {
      * @throws IOException If there is an I/O exception reading from the underlying stream.
      */
     public int read(byte[] bs, int off, int len) throws IOException {
-        for (int i = off; i < len; ++i) {
-            int nextByte = read();
-            if (nextByte == -1) {
-                int numRead = i - off;
-                return numRead > 0 ? numRead : -1; 
-            }
-            bs[i] = Converter.integerToByte(nextByte);
-        }
-        return len > 0 ? len : 0;
+	for (int i = off; i < len; ++i) {
+	    int nextByte = read();
+	    if (nextByte == -1) return (i - off); // eof, return length read
+	    bs[i] = Converter.integerToByte(nextByte);
+	}
+	return len > 0 ? len : 0;
     }
 
     /* Reads the next byte from the input stream.   Returns -1 if end-of-stream
@@ -133,16 +125,16 @@ public final class ArithCodeInputStream extends InputStream {
      * @throws IOException If there is an I/O exception reading from the underlying stream.
      */
     public int read() throws IOException {
-        int result = _nextByte;
-        decodeNextByte();
-        return result;
+	int result = _nextByte;
+	decodeNextByte();
+	return result;
     }
-        
+	
     /** Not supported.  Throws an <code>IOException</code> if called.
      * @throws IOException whenever called.
      */
     public void reset() throws IOException {
-        throw new IOException("reset not supported in AdaptiveUnigramInputStream");
+	throw new IOException("reset not supported in AdaptiveUnigramInputStream");
     }
 
     /** Skips the given number of bytes from the input.
@@ -151,9 +143,9 @@ public final class ArithCodeInputStream extends InputStream {
      * @throws IOException If there is an I/O exception reading from the underlying stream.
      */
     public long skip(long n) throws IOException {
-        for (long i = 0; i < n; ++i) 
-            if (read() == -1) return i;
-        return n;
+	for (long i = 0; i < n; ++i) 
+	    if (read() == -1) return i;
+	return n;
     }
 
     /** The statistical model model on which the input stream is based.
@@ -177,14 +169,14 @@ public final class ArithCodeInputStream extends InputStream {
     /** Buffers the next byte into <code>_nextByte</code>.
      */
     private void decodeNextByte() throws IOException {
-        if (_nextByte == ArithCodeModel.EOF) return;
-        if (_decoder.endOfStream()) { _nextByte = ArithCodeModel.EOF; return; }
-        while (true) {
-            _nextByte = _model.pointToSymbol(_decoder.getCurrentSymbolCount(_model.totalCount()));
-            _model.interval(_nextByte,_interval);
-            _decoder.removeSymbolFromStream(_interval); 
-            if (_nextByte != ArithCodeModel.ESCAPE) return;
-        }
+	if (_nextByte == ArithCodeModel.EOF) return;
+	if (_decoder.endOfStream()) { _nextByte = ArithCodeModel.EOF; return; }
+	while (true) {
+	    _nextByte = _model.pointToSymbol(_decoder.getCurrentSymbolCount(_model.totalCount()));
+	    _model.interval(_nextByte,_interval);
+	    _decoder.removeSymbolFromStream(_interval); 
+	    if (_nextByte != ArithCodeModel.ESCAPE) return;
+	}
     }
     
 }

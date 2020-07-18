@@ -1,4 +1,4 @@
-package com.colloquial.io;
+package com.colloquial.arithcode;
 
 import java.io.InputStream;
 import java.io.IOException;
@@ -7,8 +7,11 @@ import java.io.IOException;
  * are returned as booleans, with <code>true=1</code> and
  * <code>false=0</code>.
  *
+ * @see com.colloquial.arithcode.BitOutput
+ *
  * @author <a href="http://www.colloquial.com/carp/">Bob Carpenter</a>
- * @version 1.2
+ * @version 1.1
+ * @see BitOutput
  * @since 1.0
  */
 public final class BitInput {
@@ -18,8 +21,8 @@ public final class BitInput {
      * @throws IOException If there is an exception reading from the specified input stream.
      */
     public BitInput(InputStream in) throws IOException {
-        _in = in;
-        readAhead();
+	_in = in;
+	readAhead();
     }
 
     /** Returns number of bits available for reading.  Will always be
@@ -28,14 +31,14 @@ public final class BitInput {
      * @throws IOException If there is an exception checking available bytes in the underlying input stream.
      */
     public long available() throws IOException {
-        return endOfStream() ? 0 : 1;
+	return endOfStream() ? 0 : 1;
     }
 
     /** Closes the underlying input stream.
      * @throws IOException If there is an exception closing the underlying input stream.
      */
     public void close() throws IOException { 
-        _in.close(); 
+	_in.close(); 
     }
 
     /** Returns <code>true</code> if all of the available bits have been read.
@@ -49,11 +52,11 @@ public final class BitInput {
      * @throws IOException If there is an exception reading a byte from the underlying stream.
      */
     public boolean readBit() throws IOException {
-        if (_nextBitIndex > 0) 
-            return ((_nextByte & (1 << _nextBitIndex--)) != 0); // inspects bit in buffered byte
-        boolean result = ((_nextByte & 1) != 0); // on last bit in byte; buffer new byte
-        readAhead();
-        return result;
+	if (_nextBitIndex > 0) 
+	    return ((_nextByte & (1 << _nextBitIndex--)) != 0); // inspects bit in buffered byte
+	boolean result = ((_nextByte & 1) != 0); // on last bit in byte; buffer new byte
+	readAhead();
+	return result;
     }
 
     /** Underlying input stream.
@@ -76,10 +79,10 @@ public final class BitInput {
      * @throws IOException If there is an IOException reading from the stream.
      */
     private void readAhead() throws IOException {
-        if (_endOfStream) return;
-        _nextByte = _in.read(); 
-        if (_nextByte == -1) { _endOfStream = true; return; }
-        _nextBitIndex = 7;
+	if (_endOfStream) return;
+	_nextByte = _in.read(); 
+	if (_nextByte == -1) { _endOfStream = true; return; }
+	_nextBitIndex = 7;
     }
 
 }

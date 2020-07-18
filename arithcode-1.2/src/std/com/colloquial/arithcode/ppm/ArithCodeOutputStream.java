@@ -1,8 +1,4 @@
-package com.colloquial.arithcode.ppm;
-
-import com.colloquial.arithcode.ArithEncoder;
-
-import com.colloquial.io.BitOutput;
+package com.colloquial.arithcode;
 
 import java.io.BufferedOutputStream;
 import java.io.IOException;
@@ -32,8 +28,8 @@ public class ArithCodeOutputStream extends OutputStream {
      * @since 1.1
      */
     public ArithCodeOutputStream(ArithEncoder encoder, ArithCodeModel model) {
-        _encoder = encoder;
-        _model = model;
+	_encoder = encoder;
+	_model = model;
     }
 
     /** Construct an output stream that writes to the specified bit output
@@ -43,7 +39,7 @@ public class ArithCodeOutputStream extends OutputStream {
      * @since 1.1
      */
     public ArithCodeOutputStream(BitOutput bitOut, ArithCodeModel model) {
-        this(new ArithEncoder(bitOut), model);
+	this(new ArithEncoder(bitOut), model);
     }
     
     /** Construct an output stream that writes to the specified buffered output
@@ -53,31 +49,31 @@ public class ArithCodeOutputStream extends OutputStream {
      * @since 1.1
      */
     public ArithCodeOutputStream(BufferedOutputStream out, ArithCodeModel model) {
-        this(new ArithEncoder(out), model);
+	this(new ArithEncoder(out), model);
     }
 
     /** Construct an output stream that writes to the specified output
      * stream using arithmetic coding with the given statistical model.
-     * @param out Output stream to write coded bits to.
+     * @param output Output stream to write coded bits to.
      * @param model Statistical model of byte stream.
      */
     public ArithCodeOutputStream(OutputStream out, ArithCodeModel model) {
-        this(new BufferedOutputStream(out), model); 
+	this(new BufferedOutputStream(out), model); 
     }
 
     /** Close this output stream.
      * @throws IOException If there is an exception in the underlying encoder.
      */
     public void close() throws IOException {
-        encode(ArithCodeModel.EOF);  // must code EOF to allow decoding to halt
-        _encoder.close();
+	encode(ArithCodeModel.EOF);  // must code EOF to allow decoding to halt
+	_encoder.close();
     }
 
     /** Flushes underlying stream.
      * @throws IOException If there is an exception flushing the underlying stream.
      */
     public void flush() throws IOException {
-        _encoder.flush();
+	_encoder.flush();
     }
 
     /** Writes array of bytes to the output stream.
@@ -85,7 +81,7 @@ public class ArithCodeOutputStream extends OutputStream {
      * @throws IOException If there is an exception in writing to the underlying encoder.
      */
     public void write(byte[] bs)  throws IOException {
-        write(bs,0,bs.length);
+	write(bs,0,bs.length);
     }
     
     /** Writes section of array of bytes to the output stream.
@@ -95,7 +91,7 @@ public class ArithCodeOutputStream extends OutputStream {
      * @throws IOException If there is an exception in writing to the underlying encoder.
      */
     public void write(byte[] bs, int off, int len)  throws IOException {
-        while (off < len) write(Converter.byteToInteger(bs[off++]));
+	while (off < len) write(Converter.byteToInteger(bs[off++]));
     }
     
     /** Writes the eight low-order bits of argument to the output stream
@@ -104,7 +100,7 @@ public class ArithCodeOutputStream extends OutputStream {
      * @throws IOException If there is an exception in writing to the underlying encoder.
      */
     public void write(int i)  throws IOException { 
-        encode(i);
+	encode(i);
     }
 
     /** The model on which the output stream is based.
@@ -125,12 +121,12 @@ public class ArithCodeOutputStream extends OutputStream {
      * @throws IOException If the underlying encoder throws an IOException.
      */
     private void encode(int symbol) throws IOException {
-        while (_model.escaped(symbol)) {
-            _model.interval(ArithCodeModel.ESCAPE,_interval); // have already done complete walk to compute escape
-            _encoder.encode(_interval);
-        }
-        _model.interval(symbol,_interval); // have already done walk to element to compute escape
-        _encoder.encode(_interval); 
+	while (_model.escaped(symbol)) {
+	    _model.interval(ArithCodeModel.ESCAPE,_interval); // have already done complete walk to compute escape
+	    _encoder.encode(_interval);
+	}
+	_model.interval(symbol,_interval); // have already done walk to element to compute escape
+	_encoder.encode(_interval); 
     }
 
 }

@@ -1,48 +1,28 @@
-package com.colloquial.arithcode.ppm;
+package com.colloquial.arithcode;
 
 /** Package utility class for converting integers to bytes and back
- * again in a uniform manner. 
+ * again in a uniform manner.  Could put this in ByteSet.  
  *
- * <p>Thanks to Garrick Toubassi for pointing out the inconsistency
- * with twos-complement arithmetic representations of the way this
- * was done in version 1.1.  
- * 
  * @author <a href="http://www.colloquial.com/carp/">Bob Carpenter</a>
- * @version 1.2
+ * @version 1.1
  * @since 1.1
  */
-public final class Converter {
+final class Converter {
 
-    private Converter() {
-        /* no instances */
-    }
-
-    /** 
-     * Returns byte coded by the specified integer.
-     *
-     * <p>Calling {@code integerToByte(i)} is the same as casting,
-     * returning {@code (byte) i}.
-     *
+    /** Returns byte coded by the specified integer.
      * @param i Integer to conver to a byte.
      * @return Byte coded by the specified integer.
      */
-    static public byte integerToByte(int i) {
-        return (byte) i;
+    static byte integerToByte(int i) {
+	return (byte)(i-128);
     }
 
-    /** 
-     * Returns integer code for the specified byte.
-     *
-     * <p>This works by converting the byte to an intger
-     * and then masking down to the low order bits,
-     * so that {@code byteToInteger(b)} returns
-     * the same value as {@code 0xFF & (int) b}.  
-     *
+    /** Returns integer code for the specified byte.
      * @param b Byte to code as an integer.
      * @return Integer code for the specified byte.
      */
-    static public int byteToInteger(byte b) {
-        return 0xFF & (int) b;
+    static int byteToInteger(byte b) {
+	return 128+ (int)b;
     }
 
 }

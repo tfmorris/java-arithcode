@@ -1,4 +1,4 @@
-package com.colloquial.io;
+package com.colloquial.arithcode;
 
 import java.io.OutputStream;
 import java.io.IOException;
@@ -21,8 +21,8 @@ public final class BitOutput {
      * @param out Underlying output stream.
      */
     public BitOutput(OutputStream out) {
-        _out = out;
-        reset();
+	_out = out;
+	reset();
     }
 
     /** Closes underlying output stream after filling to a byte
@@ -30,16 +30,16 @@ public final class BitOutput {
      * @throws IOException If there is an I/O exception writing the next byte or closing the underlying output stream.
      */
     public void close() throws IOException {
-        if (_nextBitIndex < 7)                       // there's something in the buffer
-            _out.write(_nextByte << _nextBitIndex); // shift to fill last byte
-        _out.close();
+	if (_nextBitIndex < 7)                       // there's something in the buffer
+	    _out.write(_nextByte << _nextBitIndex); // shift to fill last byte
+	_out.close();
     }
 
     /** Flushes the underlying output stream.
      * @throws IOException If there is an exception flushing the underlying output stream.
      */
     public void flush() throws IOException {
-        _out.flush();
+	_out.flush();
     }
 
     /** Writes the single specified bit to the underlying output stream,
@@ -48,8 +48,8 @@ public final class BitOutput {
      * @throws IOException If there is an exception in the underlying output stream.
      */
     public void writeBit(boolean bit) throws IOException {
-        if (bit) writeBitTrue();
-        else writeBitFalse();
+	if (bit) writeBitTrue();
+	else writeBitFalse();
     }
 
     /** Writes a single <code>true</code> (<code>1</code>) bit.
@@ -57,13 +57,13 @@ public final class BitOutput {
      * @since 1.1
      */
     public void writeBitTrue() throws IOException {
-        if (_nextBitIndex == 0) {
-            _out.write(_nextByte + 1);
-            reset();
-        } else {
-            _nextByte = (_nextByte + 1) << 1;
-            --_nextBitIndex;
-        }
+	if (_nextBitIndex == 0) {
+	    _out.write(_nextByte + 1);
+	    reset();
+	} else {
+	    _nextByte = (_nextByte + 1) << 1;
+	    --_nextBitIndex;
+	}
     }
 
     /** Writes a single <code>false</code> (<code>0</code>) bit.
@@ -71,13 +71,13 @@ public final class BitOutput {
      * @since 1.1
      */
     public void writeBitFalse() throws IOException {
-        if (_nextBitIndex == 0) {
-            _out.write(_nextByte);
-            reset();
-        } else {
-            _nextByte <<= 1;
-            --_nextBitIndex;
-        }
+	if (_nextBitIndex == 0) {
+	    _out.write(_nextByte);
+	    reset();
+	} else {
+	    _nextByte <<= 1;
+	    --_nextBitIndex;
+	}
     }
 
     /** Buffering for output. Bytes are represented as integers,
@@ -97,8 +97,8 @@ public final class BitOutput {
     /** Resets the bit buffer.
      */
     private void reset() {
-        _nextByte = 0;
-        _nextBitIndex = 7;
+	_nextByte = 0;
+	_nextBitIndex = 7;
     }
 
 

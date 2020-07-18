@@ -1,4 +1,4 @@
-package com.colloquial.arithcode.ppm;
+package com.colloquial.arithcode;
 
 /** A set of bytes.  Supports add operations, containment queries,
  * and may be cleared.
@@ -12,16 +12,16 @@ public final class ByteSet {
     /** Construct a byte set.
      */
     public ByteSet() {
-        // clear(); implied
+	// clear(); implied
     }
 
     /** Remove all of the bytes from this set.
      */
     public void clear() {
-        _bits1 = 0;
-        _bits2 = 0;
-        _bits3 = 0;
-        _bits4 = 0;
+	_bits1 = 0;
+	_bits2 = 0;
+	_bits3 = 0;
+	_bits4 = 0;
     }
 
     /* Adds a byte, specified as an integer, to this set.
@@ -34,10 +34,10 @@ public final class ByteSet {
      * @param b Byte to add to this set.
      */
     public void add(byte b) {
-        if      (b >  63) _bits4 |= ((long) 1) << (- 64 + (int) b);
-        else if (b >=  0) _bits3 |= ((long) 1) << (/* 0 +*/(int) b);
-        else if (b > -65) _bits2 |= ((long) 1) << (  64 + (int) b); 
-        else              _bits1 |= ((long) 1) << ( 128 + (int) b);
+	if      (b >  63) _bits4 |= ((long) 1) << (- 64 + (int) b);
+	else if (b >=  0) _bits3 |= ((long) 1) << (/* 0 +*/(int) b);
+	else if (b > -65) _bits2 |= ((long) 1) << (  64 + (int) b); 
+	else              _bits1 |= ((long) 1) << ( 128 + (int) b);
     }
 
     /** Removes a byte, specified as an integer, from this set.
@@ -51,10 +51,10 @@ public final class ByteSet {
      * @since 1.1
      */
     public void remove(byte b) {
-        if      (b >  63) _bits4 &= ~(((long) 1) << (- 64 + (int) b));
-        else if (b >=  0) _bits3 &= ~(((long) 1) << (/* 0 +*/(int) b));
-        else if (b > -65) _bits2 &= ~(((long) 1) << (  64 + (int) b)); 
-        else              _bits1 &= ~(((long) 1) << ( 128 + (int) b));
+	if      (b >  63) _bits4 &= ~(((long) 1) << (- 64 + (int) b));
+	else if (b >=  0) _bits3 &= ~(((long) 1) << (/* 0 +*/(int) b));
+	else if (b > -65) _bits2 &= ~(((long) 1) << (  64 + (int) b)); 
+	else              _bits1 &= ~(((long) 1) << ( 128 + (int) b));
 
     }
 
@@ -65,10 +65,10 @@ public final class ByteSet {
      * @since 1.1
      */
     public void add(ByteSet that) {
-        _bits1 |= that._bits1;
-        _bits2 |= that._bits2;
-        _bits3 |= that._bits3;
-        _bits4 |= that._bits4;
+	_bits1 |= that._bits1;
+	_bits2 |= that._bits2;
+	_bits3 |= that._bits3;
+	_bits4 |= that._bits4;
     }
 
     /** Removes all the members of specified set from this set. The result is
@@ -78,10 +78,10 @@ public final class ByteSet {
      * @since 1.1
      */
     public void remove(ByteSet that) {
-        _bits1 &= ~that._bits1;
-        _bits2 &= ~that._bits2;
-        _bits3 &= ~that._bits3;
-        _bits4 &= ~that._bits4;
+	_bits1 &= ~that._bits1;
+	_bits2 &= ~that._bits2;
+	_bits3 &= ~that._bits3;
+	_bits4 &= ~that._bits4;
     }
 
     /** Removes all the elements of this set that are not in the specified
@@ -91,10 +91,10 @@ public final class ByteSet {
      * @since 1.1
      */
     public void restrict(ByteSet that) {
-        _bits1 &= that._bits1;
-        _bits2 &= that._bits2;
-        _bits3 &= that._bits3;
-        _bits4 &= that._bits4;
+	_bits1 &= that._bits1;
+	_bits2 &= that._bits2;
+	_bits3 &= that._bits3;
+	_bits4 &= that._bits4;
     }
 
     /** Returns <code>true</code> if byte specified as an integer
@@ -104,7 +104,7 @@ public final class ByteSet {
      * @since 1.0
      */
     public boolean contains(int i) {
-        return contains(Converter.integerToByte(i));
+	return contains(Converter.integerToByte(i));
     }
 
     /** Returns <code>true</code> if specified byte is a member
@@ -113,21 +113,21 @@ public final class ByteSet {
      * @return <code>true</code> if the specified byte is a member of this set.
      */
     public boolean contains(byte b) {
-        // built-in ASCII order preference in first two test cases
-        // moving 0 inside ternary is *much* slower -- must be set up for ints, not bools
-        if (b > 63) return 0 != (_bits4 & ((long) 1) << (- 64 + (int) b));
-        if (b >= 0) return 0 != (_bits3 & ((long) 1) << ((int) b));
-        if (b > -65) return 0 != (_bits2 & ((long) 1) << (  64 + (int) b));
-        return 0 != ((_bits1 & ((long) 1) << ( 128 + (int) b)));
+	// built-in ASCII order preference in first two test cases
+	// moving 0 inside ternary is *much* slower -- must be set up for ints, not bools
+	if (b > 63) return 0 != (_bits4 & ((long) 1) << (- 64 + (int) b));
+	if (b >= 0) return 0 != (_bits3 & ((long) 1) << ((int) b));
+	if (b > -65) return 0 != (_bits2 & ((long) 1) << (  64 + (int) b));
+	return 0 != ((_bits1 & ((long) 1) << ( 128 + (int) b)));
     }
 
     /** Returns number of elements in this set.
      * @return Number of elements in this set.
      */
     public int size() {
-        int sum = 0;
-        for (int i = 0; i < 256; ++i) if (contains(i)) ++sum;
-        return sum;
+	int sum = 0;
+	for (int i = 0; i < 256; ++i) if (contains(i)) ++sum;
+	return sum;
     }
 
     /** An empty set.  Unsafe, because nothing prevents
@@ -155,4 +155,4 @@ public final class ByteSet {
     private long _bits4; 
 
 }
-        
+	
