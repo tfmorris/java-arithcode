@@ -1,8 +1,5 @@
 package com.colloquial.arithcode;
 
-import com.colloquial.io.BitOutput;
-
-import java.io.Flushable;
 import java.io.IOException;
 import java.io.OutputStream;
 
@@ -14,36 +11,27 @@ import java.io.OutputStream;
  * 
  * <P>For more details, see <a href="../../../tutorial.html">The Arithemtic Coding Tutorial</a>.
  *
- * <p>This code is a refactored version of  Witten, Neal and Cleary's original code, from
- *
- * <ul>
- * <li>Witten, I. H., R. Neal,and J. G. Cleary. 1987. Arithmetic coding for data compression. 
- * <i>Communications of the ACM</i> <b>30</b>(6): 520--540.
- * <br />
- * Code: <a href="ftp://ftp.cpsc.ucalgary.ca/pub/projects/ar.cod/cacm-87.shar">ftp://ftp.cpsc.ucalgary.ca/pub/projects/ar.cod/cacm-87.shar</a>
- * </ul>
- *
  * @author <a href="http://www.colloquial.com/carp/">Bob Carpenter</a>
- * @version 1.2
+ * @version 1.1
+ * @see ArithDecoder
+ * @see BitOutput
  * @since 1.0
  */
-public final class ArithEncoder 
-    extends ArithCoder
-    implements Flushable {
+public final class ArithEncoder extends ArithCoder {
 
     /** Construct an arithmetic coder from a bit output.
      * @param out Underlying bit output.
      * @since 1.1
      */
     public ArithEncoder(BitOutput out) {
-        _out = out;
+	_out = out;
     }
 
     /** Construct an arithmetic coder from an output stream.
      * @param out Underlying output stream.
      */
     public ArithEncoder(OutputStream out) {
-        this(new BitOutput(out));
+	this(new BitOutput(out));
     }
 
     /** Close the arithmetic encoder, writing all bits that are
@@ -51,10 +39,10 @@ public final class ArithEncoder
      * @throws IOException If there is an exception writing to or closing the underlying output stream.
      */
     public void close() throws IOException {
-        ++_bitsToFollow; // need a final bit
-        if (_low < FIRST_QUARTER) bitPlusFollowFalse();
-        else bitPlusFollowTrue();
-        _out.close();
+	++_bitsToFollow; // need a final bit (not sure why)
+	if (_low < FIRST_QUARTER) bitPlusFollowFalse();
+	else bitPlusFollowTrue();
+	_out.close();
     }
 
     /** Flushes bit output.
@@ -69,7 +57,7 @@ public final class ArithEncoder
      * @throws IOException If there is an exception writing to the underlying stream.
      */
     public void encode(int[] counts) throws IOException {
-        encode(counts[0],counts[1],counts[2]);
+	encode(counts[0],counts[1],counts[2]);
     }
 
     /** Encodes an interval expressed as a low count, high count and total count. 
@@ -82,26 +70,26 @@ public final class ArithEncoder
      * @see #encode(int[])
      */
     public void encode(int lowCount, int highCount, int totalCount) throws IOException {
-        long range = _high - _low + 1;
-        _high = _low + (range * highCount) / totalCount - 1;
-        _low  = _low + (range * lowCount) / totalCount;
-        while (true) {
-            if (_high < HALF) {
-                bitPlusFollowFalse();
-            } else if (_low >= HALF) {
-                bitPlusFollowTrue();
-                _low -= HALF;
-                _high -= HALF;
-            } else if (_low >= FIRST_QUARTER && _high < THIRD_QUARTER) {
-                ++_bitsToFollow;
-                _low -= FIRST_QUARTER;
-                _high -= FIRST_QUARTER;
-            } else {
-                return;
-            }
-            _low <<= 1;     
-            _high = (_high << 1) + 1; 
-        }
+	long range = _high - _low + 1;
+	_high = _low + (range * highCount) / totalCount - 1;
+	_low  = _low + (range * lowCount) / totalCount;
+	while (true) {
+	    if (_high < HALF) {
+		bitPlusFollowFalse();
+	    } else if (_low >= HALF) {
+		bitPlusFollowTrue();
+		_low -= HALF;
+		_high -= HALF;
+	    } else if (_low >= FIRST_QUARTER && _high < THIRD_QUARTER) {
+		++_bitsToFollow;
+		_low -= FIRST_QUARTER;
+		_high -= FIRST_QUARTER;
+	    } else {
+		return;
+	    }
+	    _low <<= 1;	    
+	    _high = (_high << 1) + 1; 
+	}
     }
 
     /** Bit output stream for writing encoding bits.
@@ -118,7 +106,7 @@ public final class ArithEncoder
      * @since 1.1
      */
     private void bitPlusFollowTrue() throws IOException {
-        for (_out.writeBitTrue(); _bitsToFollow > 0; --_bitsToFollow) _out.writeBitFalse();
+	for (_out.writeBitTrue(); _bitsToFollow > 0; --_bitsToFollow) _out.writeBitFalse();
     }
 
     /** Write a <code>false</code> bit, and then a number of <code>true</code> bits
@@ -127,7 +115,7 @@ public final class ArithEncoder
      * @since 1.1
      */
     private void bitPlusFollowFalse() throws IOException {
-        for (_out.writeBitFalse(); _bitsToFollow > 0; --_bitsToFollow) _out.writeBitTrue();
+	for (_out.writeBitFalse(); _bitsToFollow > 0; --_bitsToFollow) _out.writeBitTrue();
     }
 
 }

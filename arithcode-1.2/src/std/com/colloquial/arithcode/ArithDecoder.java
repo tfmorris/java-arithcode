@@ -1,7 +1,5 @@
 package com.colloquial.arithcode;
 
-import com.colloquial.io.BitInput;
-
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -13,20 +11,10 @@ import java.io.InputStream;
  * 
  * <P>For more details, see <a href="../../../tutorial.html">The Arithemtic Coding Tutorial</a>.
  *
- * <p>This code is a refactored version of  Witten, Neal and Cleary's original code, from
- *
- * <ul>
- * <li>Witten, I. H., R. Neal,and J. G. Cleary. 1987. Arithmetic coding for data compression. 
- * <i>Communications of the ACM</i> <b>30</b>(6): 520--540.
- * <br />
- * Code: <a href="ftp://ftp.cpsc.ucalgary.ca/pub/projects/ar.cod/cacm-87.shar">ftp://ftp.cpsc.ucalgary.ca/pub/projects/ar.cod/cacm-87.shar</a>
- * </ul>
- *
- * <P>Thanks to Garrick Toubassi for providing a patch
- * for a bug in the {@code removeSymbolFromStream()} method.
- * 
  * @author <a href="http://www.colloquial.com/carp/">Bob Carpenter</a>
- * @version 1.2
+ * @version 1.1
+ * @see ArithEncoder
+ * @see BitInput 
  * @since 1.0
  */
 public final class ArithDecoder extends ArithCoder {
@@ -38,11 +26,11 @@ public final class ArithDecoder extends ArithCoder {
      * @since 1.1
      */
     public ArithDecoder(BitInput in) throws IOException {
-        _in = in;
-        for (int i = 1; i <= CODE_VALUE_BITS; ++i) {
-            bufferBit();
-            ++_bufferedBits;
-        }
+	_in = in;
+	for (int i = 1; i <= CODE_VALUE_BITS; ++i) {
+	    bufferBit();
+	    ++_bufferedBits;
+	}
     }
 
     /** Construct an arithmetic decoder that reads from the given
@@ -51,7 +39,7 @@ public final class ArithDecoder extends ArithCoder {
      * @throws IOException If there is an exception buffering from input stream.
      */
     public ArithDecoder(InputStream in) throws IOException {
-        this(new BitInput(in));
+	this(new BitInput(in));
     }
 
     /** Returns <code>true</code> if the end of stream has been reached
@@ -65,11 +53,10 @@ public final class ArithDecoder extends ArithCoder {
      * Once symbol is retrieved, the model is used to compute the actual low,
      * high and total counts and {@link #removeSymbolFromStream} is called.
      * @param totalCount The current total count for the model.
-     * @return A count that is in the range above or equal to the low
-     * count and less than the high count of the next symbol decoded.
+     * @return A count that is in the range above or equal to the low count and less than the high count of the next symbol decoded.
      */
     public int getCurrentSymbolCount(int totalCount) {
-        return (int) (((_value - _low + 1) * totalCount - 1) / (_high - _low + 1));
+	return (int) (((_value - _low + 1) * totalCount - 1) / (_high - _low + 1));
     }
 
     /** Removes a symbol from the input stream that was coded with counts
@@ -79,7 +66,7 @@ public final class ArithDecoder extends ArithCoder {
      * @see #removeSymbolFromStream(long,long,long)
      */
     public void removeSymbolFromStream(int[] counts) throws IOException {
-        removeSymbolFromStream(counts[0],counts[1],counts[2]);
+	removeSymbolFromStream(counts[0],counts[1],counts[2]);
     }
 
     /** Removes a symbol from the input stream.  Called after {@link #getCurrentSymbolCount}.
@@ -89,27 +76,27 @@ public final class ArithDecoder extends ArithCoder {
      * @throws IOException If there is an exception in buffering input from the underlying input stream.
      */
     public void removeSymbolFromStream(long lowCount, long highCount, long totalCount) throws IOException {
-        long range = _high - _low + 1;
-        _high = _low + (range * highCount) / totalCount - 1;
-        _low = _low + (range * lowCount) / totalCount;
-        while (true) {
-            if (_high < HALF) {
-                // no effect
-            } else if (_low >= HALF) {
-                _value -= HALF;
-                _low -= HALF;
-                _high -= HALF;
-            } else if (_low >= FIRST_QUARTER && _high < THIRD_QUARTER) {
-                _value -= FIRST_QUARTER;
-                _low -= FIRST_QUARTER;
-                _high -= FIRST_QUARTER;
-            } else {
-                return;
-            }
-            _low <<= 1; // = 2 * _low;      // _low <<= 1;
-            _high = (_high << 1) + 1; // 2 * _high + 1; //          _high = (_high<<1) + 1;
-            bufferBit();
-        }
+	long range = _high - _low + 1;
+	_high = _low + (range * highCount) / totalCount - 1;
+	_low = _low + (range * lowCount) / totalCount;
+	while (true) {
+	    if (_high < HALF) {
+		// no effect
+	    } else if (_low >= HALF) {
+		_value -= HALF;
+		_low -= HALF;
+		_high -= HALF;
+	    } else if (_low >= FIRST_QUARTER && _high <= THIRD_QUARTER) {
+		_value -= FIRST_QUARTER;
+		_low -= FIRST_QUARTER;
+		_high -= FIRST_QUARTER;
+	    } else {
+		return;
+	    }
+	    _low <<= 1; // = 2 * _low; 	    // _low <<= 1;
+	    _high = (_high << 1) + 1; // 2 * _high + 1; //	    _high = (_high<<1) + 1;
+	    bufferBit();
+	}
     }
 
     /** Closes underlying bit output.
@@ -138,17 +125,17 @@ public final class ArithDecoder extends ArithCoder {
      * @throws IOException If there is an <code>IOException</code> buffering from the underlying bit stream.
      */
     private void bufferBit() throws IOException {
-        if (_in.endOfStream()) { 
-            if (_bufferedBits == 0) { 
-                _endOfStream = true; 
-                return; 
-            }
-            _value <<= 1;
-            --_bufferedBits;
-        } else {
-            _value = (_value<<1);
-            if (_in.readBit()) ++_value;
-        }
+	if (_in.endOfStream()) { 
+	    if (_bufferedBits == 0) { 
+		_endOfStream = true; 
+		return; 
+	    }
+	    _value <<= 1;
+	    --_bufferedBits;
+	} else {
+	    _value = (_value<<1);
+	    if (_in.readBit()) ++_value;
+	}
     }
 
 }
